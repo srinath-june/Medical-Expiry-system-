@@ -1,0 +1,31 @@
+{% macro badge(s) %}<span class="badge {{ s.key }}">{{ s.label }}</span>{% endmacro %}
+
+{% macro table(meds, actions=True) %}
+{% if meds %}
+<div class="table-wrap"><table>
+  <thead><tr><th>Medicine</th><th>Batch</th><th>Expiry</th><th>Stock</th><th>Alert</th>{% if actions %}<th>Actions</th>{% endif %}</tr></thead>
+  <tbody>
+  {% for m in meds %}
+  <tr class="row-{{ m.status.key }}">
+    <td><strong>{{ m.name }}</strong><br><small>{{ m.barcode or 'no barcode' }}</small></td>
+    <td>{{ m.batch_no or '-' }}</td>
+    <td>{{ m.expiry_date }}</td>
+    <td>{{ m.quantity }} strips</td>
+    <td>{{ badge(m.status) }}</td>
+    {% if actions %}
+    <td class="actions">
+      <form method="post" action="{{ url_for('sell', med_id=m.id) }}">
+        <input type="number" name="quantity" value="1" min="1" aria-label="Strips to remove">
+        <button class="btn small">Sell</button>
+      </form>
+      <form method="post" action="{{ url_for('delete', med_id=m.id) }}" onsubmit="return confirm('Remove this entry?')">
+        <button class="btn small danger">Remove</button>
+      </form>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}<p class="empty">Nothing here yet.</p>{% endif %}
+{% endmacro %}

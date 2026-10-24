@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import table %}
+{% block content %}
+<h1>Right medicine at the right time</h1>
+<p class="lead">{{ total }} strips in stock. Scan a strip to check it, or review what needs attention below.</p>
+
+<section class="cards">
+  <a class="card expired" href="{{ url_for('inventory', filter='expired') }}"><b>{{ counts.expired }}</b><span>Expired</span></a>
+  <a class="card critical" href="{{ url_for('inventory', filter='critical') }}"><b>{{ counts.critical }}</b><span>Expiring in {{ critical_days }} days</span></a>
+  <a class="card near" href="{{ url_for('inventory', filter='near') }}"><b>{{ counts.near }}</b><span>Expiring in {{ near_days }} days</span></a>
+  <a class="card ok" href="{{ url_for('inventory', filter='ok') }}"><b>{{ counts.ok }}</b><span>In stock, safe</span></a>
+</section>
+
+<section class="panel">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><b>Scan / Enter</b> the barcode on the strip, or type the details.</li>
+    <li><b>Fetch details</b> - saved name and batches fill in automatically.</li>
+    <li><b>Check &amp; alert</b> - red or yellow warning if near expiry or expired.</li>
+    <li><b>Update stock</b> - the strip count is saved.</li>
+    <li><b>View reports</b> - expiry lists and stock status anytime.</li>
+  </ol>
+  <a class="btn" href="{{ url_for('scan') }}">Scan a medicine</a>
+</section>
+
+<section class="panel">
+  <h2>Needs attention</h2>
+  {% if urgent %}{{ table(urgent) }}{% else %}<p class="empty">All clear. No medicines are expired or near expiry.</p>{% endif %}
+</section>
+{% endblock %}

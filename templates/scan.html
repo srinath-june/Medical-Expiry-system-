@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Scan medicine{% endblock %}
+{% block content %}
+<h1>Scan or add a medicine</h1>
+
+{% if result %}
+<section class="panel result {{ result.status.key }}">
+  <h2>Step 3 &amp; 4: Checked and stock updated</h2>
+  <div class="alert-box {{ result.status.key }}">
+    {% if result.status.key == 'expired' %}Expired!{% elif result.status.key in ('critical','near') %}Near expiry!{% else %}Safe to sell{% endif %}
+    <small>{{ result.status.label }}</small>
+  </div>
+  <dl>
+    <dt>Medicine</dt><dd>{{ result.name }}</dd>
+    <dt>Batch</dt><dd>{{ result.batch_no or '-' }}</dd>
+    <dt>Expiry</dt><dd>{{ result.expiry }}</dd>
+    <dt>Added now</dt><dd>{{ result.added }} strips</dd>
+    <dt>Total stock</dt><dd><strong>{{ result.total }} strips</strong></dd>
+  </dl>
+  <a class="btn" href="{{ url_for('scan') }}">Scan next medicine</a>
+  <a class="btn ghost" href="{{ url_for('reports') }}">View reports</a>
+</section>
+{% else %}
+
+<ol class="progress" id="progress">
+  <li class="on" data-s="1">Scan / Enter</li><li data-s="2">Fetch details</li>
+  <li data-s="3">Check &amp; alert</li><li data-s="4">Update stock</li>
+</ol>
+
+<section class="panel">
+  <h2>Step 1: Scan or enter</h2>
+  <div class="scanbox">
+    <video id="video" playsinline muted hidden></video>
+    <div class="scan-actions">
+      <button type="button" class="btn" id="camBtn">Scan with camera</button>
+      <button type="button" class="btn ghost" id="stopBtn" hidden>Stop camera</button>
+    </div>
+    <p class="hint" id="camMsg">Using a USB scanner? Click the barcode box below and scan. Or type the details yourself.</p>
+  </div>
+
+  <form method="post" id="form" autocomplete="off">
+    <label>Barcode (optional)
+      <input name="barcode" id="barcode" inputmode="numeric" placeholder="Scan or type barcode">
+    </label>
+    <p class="found" id="found" hidden></p>
+
+    <label>Medicine name
+      <input name="name" id="name" required placeholder="e.g. Paracetamol 500mg">
+    </label>
+    <div class="grid2">
+      <label>Batch no.
+        <input name="batch_no" id="batch" placeholder="e.g. B7421">
+      </label>
+      <label>Expiry date
+        <input type="date" name="expiry_date" id="expiry" required>
+      </label>
+    </div>
+    <div class="alert-box live" id="live" hidden></div>
+    <label>Strips to add
+      <input type="number" name="quantity" id="qty" min="1" value="1" required>
+    </label>
+    <button class="btn big">Check and save stock</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if not result %}<script src="{{ url_for('static', filename='app.js') }}"></script>{% endif %}{% endblock %}

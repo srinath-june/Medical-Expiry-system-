@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import table %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<h1>Inventory</h1>
+<form class="filters" method="get">
+  <input name="q" value="{{ q }}" placeholder="Search name, barcode or batch" aria-label="Search">
+  <select name="filter" aria-label="Filter by status">
+    {% for k, l in [('all','All'),('expired','Expired'),('critical','Within 7 days'),('near','Within 30 days'),('ok','Safe')] %}
+    <option value="{{ k }}" {{ 'selected' if flt == k }}>{{ l }}</option>{% endfor %}
+  </select>
+  <button class="btn">Search</button>
+  <a class="btn ghost" href="{{ url_for('export_csv') }}">Download CSV</a>
+</form>
+{{ table(meds) }}
+{% endblock %}

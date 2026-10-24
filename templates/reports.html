@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import table %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Expiry alerts</h1>
+<p class="lead">Step 5: expiry lists and stock status, always up to date.</p>
+<section class="cards">
+  <div class="card expired"><b>{{ groups.expired|length }}</b><span>Expired</span></div>
+  <div class="card critical"><b>{{ groups.critical|length }}</b><span>Expiring in {{ critical_days }} days</span></div>
+  <div class="card near"><b>{{ groups.near|length }}</b><span>Expiring in {{ near_days }} days</span></div>
+  <div class="card ok"><b>{{ groups.ok|length }}</b><span>In stock, safe</span></div>
+</section>
+<section class="panel"><h2>Expired - remove from shelf</h2>{{ table(groups.expired) }}</section>
+<section class="panel"><h2>Expiring in {{ critical_days }} days</h2>{{ table(groups.critical) }}</section>
+<section class="panel"><h2>Expiring in {{ near_days }} days</h2>{{ table(groups.near) }}</section>
+<section class="panel"><h2>In stock, safe</h2>{{ table(groups.ok, actions=False) }}</section>
+<a class="btn ghost" href="{{ url_for('export_csv') }}">Download CSV</a>
+{% endblock %}
